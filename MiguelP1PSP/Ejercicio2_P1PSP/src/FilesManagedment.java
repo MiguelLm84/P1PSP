@@ -18,39 +18,27 @@ public class FilesManagedment {
 		char vocalMin=v.charAt(0);
 		char vocalMay=v.toUpperCase().charAt(0);
 		FilesProperties fP=new FilesProperties();		
-
+		
 		//Comprobación si el fichero que se pasa por argumentos (args[0]) existe.
 		if(!ficheroArgs.exists()) {
 			System.out.println("El fichero de la posición args[0] no existe o no se encuentra.");
 			System.out.println(ficheroArgs);
 			
-		}else {	
+		} else {			
 			//Se crea el fichero de resultados de cada vocal.
-			String[] listaVocales= {"a","e","i","o","u"};        
-            for(int i=0;i<listaVocales.length;i++) {
-                v=listaVocales[i];
-                File fileConteo=new File(".\\ResultVocal_"+v.toUpperCase()+".txt");
-                if(fileResVocal==fileConteo) {
-                	fileConteo.delete();
-                } else {
-                	try {
-    					fileResVocal.createNewFile();
-    				} catch (IOException k) {
-    					System.out.println("Error, el fichero '"+fileResVocal+"' no se ha podido crear.");
-    					k.getMessage();
-    				}				
-                }
-            }
+			if(!fileResVocal.exists()) {
+				try {
+					fileResVocal.createNewFile();
+					System.out.println("El fichero de la vocal se ha creado correctamente.");
+					
+				} catch (IOException k) {
+					System.out.println("Error, el fichero '"+fileResVocal+"' no se ha podido crear.");
+					k.getMessage();
+				}				
+			} else {
+				System.out.println("El fichero no existe y no se ha creado.");
+			}
 			
-//			//Se crea el fichero de resultados de cada vocal.
-//			if(!fileResVocal.exists()) {
-//				try {
-//					fileResVocal.createNewFile();
-//				} catch (IOException k) {
-//					System.out.println("Error, el fichero '"+fileResVocal+"' no se ha podido crear.");
-//					k.getMessage();
-//				}				
-//			}
 			//Se lee en bucle las líneas del fichero inicial (args[0]).
 			try {
 				ArrayList<String> lineasFichero=new ArrayList<String>();	
@@ -65,6 +53,7 @@ public class FilesManagedment {
 					}					
 				}
 				br.close();
+				
 				//Se lee la lista de líneas y se va aumentando el contador si procede,
 				//además se guarda el resultado en el fichero de conteo de cada vocal.
 				for(String read : lineasFichero) {
@@ -76,10 +65,11 @@ public class FilesManagedment {
 						
 						char charVowel=lineas[i];
 						if(charVowel==vocalMin || charVowel==vocalMay) {
-							contador++;	
+							contador++;
 						}
 					}					
-				}							
+				}
+				
 				//Se escribe en el fichero de resultados de las vocales el contador con el conteo de cada una.
 				String conteo=String.valueOf(contador);
 				PrintWriter pw=fP.getPrintWriter(fileResVocal);
@@ -104,11 +94,24 @@ public class FilesManagedment {
 		
 		try {
 			fP.getBufferedReader(ficheroArgs).close();
+			
 		} catch (IOException e) {
 			System.out.println("Error al cerrar el flujo en BufferedReader de la clase Main.java");
 			e.getMessage();
+			
+		} catch(NullPointerException f) {
+			System.out.println("Error, el fichero '"+ficheroArgs+"' está vacío y no se puede acceder a él.");
+			f.getMessage();	
+			
 		}
-		fP.getPrintWriter(fileResVocal).close();
+		try {
+			fP.getPrintWriter(fileResVocal).close();
+			
+		}catch(NullPointerException g) {
+			System.out.println("Error, el fichero '"+fileResVocal+"' está vacío y no se puede acceder a él.");
+			g.getMessage();	
+			
+		}
 
 		return volcado;
 	}
